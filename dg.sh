@@ -131,7 +131,7 @@ dns_information () {
     # IFS: Ignore the spaces by using only "\n" as the delimiter to store mx into array.
     IFS=$'\n'
     mx_record_array=$(dig mx +short ${domain_input})
-    ns_record_array=$(dig ns +short ${domain_input})  
+    ns_record_array=$(dig ns +short ${domain_input})
 
     # Output
     echo -e ${Line}${Section}[+] ${Heading} DNS ${Color_Off}
@@ -153,21 +153,29 @@ while getopts ":h:dns" o; do
     case "${o}" in
         h)
             domain_input=${OPTARG}
-            general_information
-            whois_information
-            dns_information
+            # Validate domain name
+            validate="^([a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]\.)+[a-zA-Z]{2,}$"
+
+            if [[ "$domain_input" =~ $validate ]]; then
+                general_information 2> /dev/null
+                whois_information  2> /dev/null
+                dns_information  2> /dev/null
+            else
+                usage
+            fi
+
             ;;
         d)
-            subdomain_enumeration
+            subdomain_enumeration  2> /dev/null
             ;;
         n) 
-            http_information
+            http_information  2> /dev/null
             ;;
         s)
-            https_information
+            https_information  2> /dev/null
             ;;
         *)
-            usage
+            usage  2> /dev/null
             ;;
     esac
 done
